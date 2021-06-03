@@ -30,7 +30,7 @@ namespace GraphicsLab5
       public Game(int width, int height, string title) :
          base(width, height, GraphicsMode.Default, title)
       {
-        
+
       }
 
       protected override void OnLoad(EventArgs e)
@@ -64,6 +64,14 @@ namespace GraphicsLab5
          DrawGrid();
          // Draw objects here
 
+         //GL.PushMatrix();
+         GL.Translate(Width / 2, Height / 2, 0);
+         GL.Scale(scalingFactor, scalingFactor, scalingFactor);
+         GL.Translate(-Width / 2, -Height / 2, 0);
+         //GL.PopMatrix();
+
+         GL.Translate(-translationVector.X, -translationVector.Y, 0);
+
          GL.Color4(Color4.Green);
          spline.DrawOutline();
 
@@ -74,11 +82,13 @@ namespace GraphicsLab5
          GL.Color4(Color4.Red);
          spline.HighlightActive();
 
+         GL.LoadIdentity();
+
       }
 
       private void UpdatePhysics()
       {
-         
+
       }
 
       protected override void OnResize(EventArgs e)
@@ -103,19 +113,21 @@ namespace GraphicsLab5
          // Отрисовка значений по оси абсцисс
          for (int i = 0; i < n; i++)
          {
-            double coordX = (i * w - Width / 2) / Width;
-            double coordY = 0;
+            double coordX = (i * w - Width / 2 + translationVector.X * scalingFactor) / scalingFactor / Width * 10f;
+            double coordY = translationVector.Y / Height * 10f;
             string str = "(" + coordX.ToString("f2") + ", " + coordY.ToString("f2") + ")";
-            DrawString(str, w * i, Height / 2, 70 / scalingFactor, 17.5f / scalingFactor);
+            //DrawString(str, w * i, Height / 2, 70 / scalingFactor, 17.5f / scalingFactor);
+            DrawString(str, w * i, Height / 2, 70, 17.5f);
          }
 
          // Отрисовка значений по оси ординат
          for (int i = 0; i < n; i++)
          {
-            double coordX = 0;
-            double coordY = (i * h - Height / 2) / Height;
+            double coordX = translationVector.X / Width * 10f;
+            double coordY = -1 * (i * h - Height / 2 + translationVector.Y * scalingFactor) / scalingFactor / Height * 10f;
             string str = "(" + coordX.ToString("f2") + ", " + coordY.ToString("f2") + ")";
-            DrawString(str, Height / 2, h * i, 70 / scalingFactor, 17.5f / scalingFactor);
+            //DrawString(str, Height / 2, h * i, 70 / scalingFactor, 17.5f / scalingFactor);
+            DrawString(str, Height / 2, h * i, 70, 17.5f);
          }
 
          // Отрисовка сетки
@@ -153,10 +165,10 @@ namespace GraphicsLab5
          GL.LineWidth(2);
          GL.Begin(PrimitiveType.Lines);
 
-         GL.Vertex2(0 , Height / 2);
+         GL.Vertex2(0, Height / 2);
          GL.Vertex2(Width, Height / 2);
 
-         GL.Vertex2(Width / 2,0);
+         GL.Vertex2(Width / 2, 0);
          GL.Vertex2(Width / 2, Height);
 
          GL.End();
@@ -188,6 +200,14 @@ namespace GraphicsLab5
          renderer.Dispose();
       }
 
+      private float InNewCoordsX(float val)
+      {
+         return (val - Width / 2) / scalingFactor + Width / 2 + translationVector.X;
+      }
+      private float InNewCoordsY(float val)
+      {
+         return (val - Height / 2) / scalingFactor + Height / 2 + translationVector.Y;
+      }
    }
 
 }

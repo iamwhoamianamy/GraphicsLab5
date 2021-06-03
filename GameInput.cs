@@ -41,12 +41,12 @@ namespace GraphicsLab5
          {
             case MouseButton.Left:
             {
-               spline.points.Add(new Vector2(mouseX, mouseY));
+               spline.points.Add(new Vector2(InNewCoordsX(mouseX), InNewCoordsY(mouseY)));
                break;
             }
             case MouseButton.Right:
             {
-               int closest = spline.FindClosest(new Vector2(mouseX, mouseY));
+               int closest = spline.FindClosest(new Vector2(InNewCoordsX(mouseX), InNewCoordsY(mouseY)));
                if (closest != -1)
                {
                   spline.isAnyActive = true;
@@ -63,8 +63,8 @@ namespace GraphicsLab5
       {
          if (e.Mouse.IsButtonDown(MouseButton.Middle))
          {
-            GL.Translate(e.XDelta, e.YDelta, 0);
-            translationVector -= new Vector2(e.XDelta, e.YDelta);
+            //GL.Translate(e.XDelta, e.YDelta, 0);
+            translationVector -= new Vector2(e.XDelta, e.YDelta) / scalingFactor;
          }
          else
          {
@@ -72,7 +72,7 @@ namespace GraphicsLab5
             {
                if (spline.isAnyActive)
                {
-                  spline.points[spline.active] = new Vector2(mouseX, mouseY);
+                  spline.points[spline.active] = new Vector2(InNewCoordsX(mouseX), InNewCoordsY(mouseY));
                }
             }
          }
@@ -85,12 +85,11 @@ namespace GraphicsLab5
 
       protected override void OnMouseWheel(MouseWheelEventArgs e)
       {
-         scalingFactor *= 1 + e.Delta * 0.05f;
-         float fac = 1 + e.Delta * 0.05f;
+         scalingFactor += e.Delta * 0.1f;
+         //float fac = 1 + e.Delta * 0.05f;
 
-         GL.Translate(Width / 2f + translationVector.X, Height / 2f + translationVector.Y, 0);
-         GL.Scale(fac, fac, fac);
-         GL.Translate(-Width / 2f - translationVector.X, -Height / 2f - translationVector.Y, 0);
+         //GL.Translate(Width / 2f + translationVector.X, Height / 2f + translationVector.Y, 0);
+         //GL.Translate(-Width / 2f - translationVector.X, -Height / 2f - translationVector.Y, 0);
 
          base.OnMouseWheel(e);
       }
